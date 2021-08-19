@@ -358,3 +358,6 @@ appsettings.Production.json
 *.min.css
 *.min.js
 MemeFolderPlan.txt
+Data/Migrations/00000000000000_CreateIdentitySchema.cs
+Data/Migrations/00000000000000_CreateIdentitySchema.Designer.cs
+Data/Migrations/ApplicationDbContextModelSnapshot.cs
