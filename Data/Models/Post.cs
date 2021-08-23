@@ -24,16 +24,16 @@
         public DateTime? EditedOn { get; set; }
 
         [Required] 
-        public bool VisibleToThePublic { get; set; } = true;
+        public bool VisibleToThePublic { get; set; } = false;
 
         [Required]
-        public bool VisibleToFollowers { get; set; } = true;
+        public bool VisibleToFollowers { get; set; } = false;
 
         [Required]
-        public bool VisibleToFriends { get; set; } = true;
+        public bool VisibleToFriends { get; set; } = false;
 
         [Required]
-        public bool VisibleToBestFriends { get; set; } = true;
+        public bool VisibleToBestFriends { get; set; } = false;
 
         [MaxLength(MaxTextLength)]
         [TextOrMediaFileRequired]

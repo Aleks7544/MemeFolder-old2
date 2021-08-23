@@ -12,7 +12,8 @@ namespace MemeFolder
     using Data;
     using Data.Models;
     using Infrastructure.Extensions;
-    using Services;
+    using Services.Posts;
+    using Services.Relationships;
 
     public class Startup
     {
@@ -50,6 +51,9 @@ namespace MemeFolder
                     options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
                 })
                 .AddRazorRuntimeCompilation();
+
+            services.AddTransient<IPostsService, PostsService>();
+            services.AddTransient<IRelationshipsService, RelationshipsService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

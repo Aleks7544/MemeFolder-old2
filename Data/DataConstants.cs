@@ -33,5 +33,10 @@
 
             public const int MaxBioLength = 1000;
         }
+
+        public class HomeController
+        {
+            public const int PageSize = 20;
+        }
     }
 }
