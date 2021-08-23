@@ -3,7 +3,9 @@
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
 
-    public class MemeFolderDbContext : IdentityDbContext
+    using Models;
+
+    public class MemeFolderDbContext : IdentityDbContext<User>
     {
         public MemeFolderDbContext(DbContextOptions<MemeFolderDbContext> options)
             : base(options)

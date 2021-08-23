@@ -1,13 +1,17 @@
 namespace MemeFolder
 {
-    using MemeFolder.Data;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+
+    using Data;
+    using Data.Models;
+    using Infrastructure.Extensions;
 
     public class Startup
     {
@@ -25,16 +29,25 @@ namespace MemeFolder
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services
-                .AddDefaultIdentity<IdentityUser>(options =>
+                .AddDefaultIdentity<User>(options =>
                 {
+                    options.Password.RequireDigit = false;
                     options.Password.RequireUppercase = false;
                     options.Password.RequireNonAlphanumeric = false;
                 })
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<MemeFolderDbContext>();
 
-            services.AddControllersWithViews();
+            services.AddAutoMapper(typeof(Startup));
 
-            services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.AddMemoryCache();
+
+            services
+                .AddControllersWithViews(options =>
+                {
+                    options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
+                })
+                .AddRazorRuntimeCompilation();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -50,13 +63,16 @@ namespace MemeFolder
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection()
+            app
+                .UseHttpsRedirection()
                 .UseStaticFiles()
                 .UseRouting()
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>
                 {
+                    endpoints.MapDefaultAreaRoute();
+
                     endpoints.MapDefaultControllerRoute();
                     endpoints.MapRazorPages();
                 });

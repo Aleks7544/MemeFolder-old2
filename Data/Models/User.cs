@@ -30,11 +30,7 @@
         [MaxLength(MaxBioLength)]
         public string Bio { get; set; }
 
-        public ICollection<User> Following { get; init; } = new HashSet<User>();
-
-        public ICollection<User> Followers { get; init; } = new HashSet<User>();
-
-        public ICollection<User> BlockedUsers { get; init; } = new HashSet<User>();
+        public ICollection<Relation> Relations { get; init; } = new HashSet<Relation>();
 
         public ICollection<Relationship> Relationships { get; init; } = new HashSet<Relationship>();
 
