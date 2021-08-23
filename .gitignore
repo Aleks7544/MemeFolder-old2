@@ -363,3 +363,4 @@ Data/Migrations/00000000000000_CreateIdentitySchema.Designer.cs
 Data/Migrations/ApplicationDbContextModelSnapshot.cs
 asp.net tips
 plan.txt
+ScaffoldingReadMe.txt

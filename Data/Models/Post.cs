@@ -8,7 +8,7 @@
 
     using static DataConstants.Post;
 
-    public class Post
+    public class Post : IVisible
     {
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
@@ -23,9 +23,18 @@
 
         public DateTime? EditedOn { get; set; }
 
+        [Required] 
+        public bool VisibleToThePublic { get; set; } = true;
+
         [Required]
-        public Visibility Visibility { get; set; }
-        
+        public bool VisibleToFollowers { get; set; } = true;
+
+        [Required]
+        public bool VisibleToFriends { get; set; } = true;
+
+        [Required]
+        public bool VisibleToBestFriends { get; set; } = true;
+
         [MaxLength(MaxTextLength)]
         [TextOrMediaFileRequired]
         public string Text { get; set; }

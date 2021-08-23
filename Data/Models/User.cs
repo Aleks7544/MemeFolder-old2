@@ -30,10 +30,20 @@
         [MaxLength(MaxBioLength)]
         public string Bio { get; set; }
 
-        public ICollection<Relation> Relations { get; init; } = new HashSet<Relation>();
-
         public ICollection<Relationship> Relationships { get; init; } = new HashSet<Relationship>();
 
         public ICollection<Collection> Collections { get; init; } = new HashSet<Collection>();
+
+        public ICollection<Comment> Comments { get; init; } = new HashSet<Comment>();
+
+        public ICollection<Post> Posts { get; init; } = new HashSet<Post>();
+
+        public ICollection<CollectionLike> CollectionLikes { get; init; } = new HashSet<CollectionLike>();
+
+        public ICollection<CommentLike> CommentLikes { get; init; } = new HashSet<CommentLike>();
+
+        public ICollection<PostLike> PostLikes { get; init; } = new HashSet<PostLike>();
+
+        public ICollection<MediaFile> MediaFiles { get; init; } = new HashSet<MediaFile>();
     }
 }

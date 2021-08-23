@@ -12,6 +12,7 @@ namespace MemeFolder
     using Data;
     using Data.Models;
     using Infrastructure.Extensions;
+    using Services;
 
     public class Startup
     {
@@ -24,13 +25,14 @@ namespace MemeFolder
         {
             services
                 .AddDbContext<MemeFolderDbContext>(options => options
-                    .UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                    .UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services
                 .AddDefaultIdentity<User>(options =>
                 {
+                    options.User.RequireUniqueEmail = true;
                     options.Password.RequireDigit = false;
                     options.Password.RequireUppercase = false;
                     options.Password.RequireNonAlphanumeric = false;

@@ -6,7 +6,7 @@
 
     using static DataConstants.Collection;
 
-    public class Collection
+    public class Collection : IVisible
     {
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
@@ -28,8 +28,17 @@
         [Required]
         public User Creator { get; init; }
 
+        [Required] 
+        public bool VisibleToThePublic { get; set; } = true;
+
         [Required]
-        public Visibility Visibility { get; set; }
+        public bool VisibleToFollowers { get; set; } = true;
+
+        [Required]
+        public bool VisibleToFriends { get; set; } = true;
+
+        [Required]
+        public bool VisibleToBestFriends { get; set; } = true;
 
         public ICollection<MediaFile> MediaFiles { get; init; } = new HashSet<MediaFile>();
 
@@ -38,7 +47,5 @@
         public ICollection<Tag> Tags { get; init; } = new HashSet<Tag>();
 
         public ICollection<CollectionLike> CollectionLikes { get; init; } = new HashSet<CollectionLike>();
-
-        public ICollection<User> Followers { get; init; } = new HashSet<User>();
     }
 }

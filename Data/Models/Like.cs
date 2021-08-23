@@ -11,7 +11,7 @@
         public string UserId { get; init; }
 
         [Required]
-        public string User { get; init; }
+        public User User { get; init; }
 
         [Required]
         public Reaction Reaction { get; set; }
