@@ -17,7 +17,7 @@
         public string FileExtension { get; init; }
 
         [Required]
-        public string FilePath { get; init; }
+        public string FilePath { get; set; }
 
         [Required]
         public string UploaderId { get; init; }

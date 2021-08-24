@@ -10,31 +10,89 @@
     using Data.Models;
     using Data.Models.Enums;
     using Infrastructure.Extensions;
+    using MediaFiles;
     using Microsoft.AspNetCore.Identity;
     using Models;
     using Relationships;
     using Shared;
+    using Tags;
 
     public class PostsService : IPostsService
     {
         private readonly MemeFolderDbContext db;
         private readonly IRelationshipsService relationshipsService;
+        private readonly IMediaFilesService mediaFilesService;
+        private readonly ITagsService tagsService;
         private readonly IConfigurationProvider mapper;
 
-        public PostsService(MemeFolderDbContext db, IRelationshipsService relationshipsService, IConfigurationProvider mapper)
+        public PostsService(MemeFolderDbContext db, IRelationshipsService relationshipsService, IConfigurationProvider mapper, IMediaFilesService mediaFilesService, ITagsService tagsService)
         {
             this.db = db;
             this.relationshipsService = relationshipsService;
             this.mapper = mapper;
+            this.mediaFilesService = mediaFilesService;
+            this.tagsService = tagsService;
         }
 
-        public Post CreatePost(string text, string userId)
-            => new Post
+        public string CreatePost(CreatePostModel model, string userId)
+        {
+            Post post = new Post
             {
                 PostedOn = DateTime.UtcNow,
                 PosterId = userId,
-                Text = text
+                Text = model.Text,
+                VisibleToBestFriends = model.VisibleToBestFriends,
+                VisibleToFriends = model.VisibleToFriends,
+                VisibleToFollowers = model.VisibleToFollowers,
+                VisibleToThePublic = model.VisibleToThePublic,
             };
+
+            ICollection<MediaFile> mediaFiles = this.mediaFilesService.ConvertToMediaFiles(model.MediaFiles, userId);
+
+            if (model.MediaFiles.Any())
+            {
+                foreach (var mediaFile in mediaFiles)
+                {
+                    post.MediaFiles.Add(mediaFile);
+                }
+            }
+
+            ICollection<Tag> tags = new List<Tag>();
+
+            if (!string.IsNullOrEmpty(model.Tags))
+            {
+                ICollection<string> tagStrings = model.Tags.Split(",", StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var tagString in tagStrings)
+                {
+                    Tag tag = this.tagsService.CreateTag(tagString);
+
+                    post.Tags.Add(tag);
+                    tags.Add(tag);
+                }
+            }
+
+            foreach (var mediaFile in post.MediaFiles)  
+            {
+                foreach (var tag in tags)
+                {
+                    mediaFile.Tags.Add(tag);
+                }
+            }
+
+            foreach (var tag in post.Tags) 
+            {
+                foreach (var mediaFile in mediaFiles)
+                {
+                    tag.MediaFiles.Add(mediaFile);
+                }
+            }
+
+            this.db.Posts.Add(post);
+            this.db.SaveChangesAsync();
+
+            return post.Id;
+        }
 
         public bool EditPost(string postId, string text)
         {

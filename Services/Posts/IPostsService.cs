@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq.Expressions;
 
     using Data.Models;
     using Models;
@@ -10,7 +9,7 @@
 
     public interface IPostsService
     {
-        Post CreatePost(string text, string userId);
+        string CreatePost(CreatePostModel model, string userId);
 
         bool EditPost(string postId, string text);
 

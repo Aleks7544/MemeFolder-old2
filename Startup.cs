@@ -13,6 +13,7 @@ namespace MemeFolder
     using Data;
     using Data.Models;
     using Infrastructure.Extensions;
+    using Services.MediaFiles;
     using Services.Posts;
     using Services.Relationships;
 
@@ -56,6 +57,7 @@ namespace MemeFolder
 
             services.AddTransient<IPostsService, PostsService>();
             services.AddTransient<IRelationshipsService, RelationshipsService>();
+            services.AddTransient<IMediaFilesService, MediaFilesService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -80,6 +82,10 @@ namespace MemeFolder
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapDefaultAreaRoute();
+
+                    endpoints.MapControllerRoute(name: "Post",
+                        pattern: "Post/{id?}",
+                        defaults: new { controller = "Posts", action = "GetPostById" });
 
                     endpoints.MapDefaultControllerRoute();
                     endpoints.MapRazorPages();
