@@ -29,16 +29,16 @@
         public User Creator { get; init; }
 
         [Required] 
-        public bool VisibleToThePublic { get; set; } = true;
+        public bool VisibleToThePublic { get; set; } = false;
 
         [Required]
-        public bool VisibleToFollowers { get; set; } = true;
+        public bool VisibleToFollowers { get; set; } = false;
 
         [Required]
-        public bool VisibleToFriends { get; set; } = true;
+        public bool VisibleToFriends { get; set; } = false;
 
         [Required]
-        public bool VisibleToBestFriends { get; set; } = true;
+        public bool VisibleToBestFriends { get; set; } = false;
 
         public ICollection<MediaFile> MediaFiles { get; init; } = new HashSet<MediaFile>();
 

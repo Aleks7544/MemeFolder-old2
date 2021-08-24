@@ -2,6 +2,10 @@
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
+    using AutoMapper;
+    using AutoMapper.QueryableExtensions;
+    using Data;
     using Microsoft.AspNetCore.Http;
 
     using Data.Models;
@@ -10,11 +14,15 @@
 
     public class MediaFilesService : IMediaFilesService
     {
+        private readonly MemeFolderDbContext db;
+        private readonly IConfigurationProvider mapper;
         private readonly IHostingEnvironment environment;
 
-        public MediaFilesService(IHostingEnvironment environment)
+        public MediaFilesService(IHostingEnvironment environment, MemeFolderDbContext db, IConfigurationProvider mapper)
         {
             this.environment = environment;
+            this.db = db;
+            this.mapper = mapper;
         }
 
         public MediaFile CreateMediaFile(IFormFile file, string userId)
@@ -78,5 +86,11 @@
 
             return mediaFiles;
         }
+
+        public T GetMediaFileById<T>(string mediaFileId)
+            => this.db.MediaFiles
+                .Where(m => m.Id == mediaFileId)
+                .ProjectTo<T>(this.mapper)
+                .FirstOrDefault();
     }
 }

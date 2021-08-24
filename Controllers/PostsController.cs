@@ -5,6 +5,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Services.Posts;
     using Services.Posts.Models;
+    using Services.Shared;
 
     public class PostsController : Controller
     {
@@ -42,6 +43,14 @@
         public IActionResult EditPost(string id, string text)
         {
             bool success = this.postsService.EditPost(id, text);
+
+            return success ? View($"/Post/{id}") : BadRequest();
+        }
+
+        [Authorize]
+        public IActionResult EditPostVisibility(string id, VisibilityFormModel model)
+        {
+            bool success = this.postsService.EditPostVisibility(id, model);
 
             return success ? View($"/Post/{id}") : BadRequest();
         }

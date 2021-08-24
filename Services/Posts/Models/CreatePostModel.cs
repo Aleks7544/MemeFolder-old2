@@ -4,23 +4,11 @@
     using System.ComponentModel.DataAnnotations;
     using Data.Attributes;
     using Microsoft.AspNetCore.Http;
-
+    using Shared;
     using static Data.DataConstants.Post;
 
-    public class CreatePostModel
+    public class CreatePostModel : VisibilityFormModel
     {
-        [Required]
-        public bool VisibleToThePublic { get; init; }
-
-        [Required]
-        public bool VisibleToFollowers { get; init; }
-
-        [Required]
-        public bool VisibleToFriends { get; init; }
-
-        [Required]
-        public bool VisibleToBestFriends { get; init; }
-
         [MaxLength(MaxTextLength)]
         [TextOrMediaFileRequired]
         public string Text { get; init; }

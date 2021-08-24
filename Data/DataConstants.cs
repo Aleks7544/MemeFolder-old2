@@ -4,9 +4,11 @@
     {
         public class Collection
         {
+            public const int MinNameLength = 1;
             public const int MaxNameLength = 50;
-            public const int MaxDescriptionLength = 1000;
 
+            public const int MinDescriptionLength = 1;
+            public const int MaxDescriptionLength = 1000;
         }
 
         public class Comment

@@ -17,14 +17,6 @@
 
         public bool IsEdited { get; init; }
 
-        public bool VisibleToThePublic { get; init; }
-
-        public bool VisibleToFollowers { get; init; }
-
-        public bool VisibleToFriends { get; init; }
-
-        public bool VisibleToBestFriends { get; init; }
-
         public string Text { get; init; }
 
         public IEnumerable<MediaFileViewModel> MediaFiles { get; init; }

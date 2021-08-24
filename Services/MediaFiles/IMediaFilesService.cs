@@ -10,5 +10,7 @@
         MediaFile CreateMediaFile(IFormFile file, string userId);
 
         ICollection<MediaFile> ConvertToMediaFiles(IEnumerable<IFormFile> forms, string userId);
+
+        T GetMediaFileById<T>(string mediaFileId);
     }
 }

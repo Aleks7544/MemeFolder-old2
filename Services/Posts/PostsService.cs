@@ -3,15 +3,14 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
+
     using AutoMapper;
     using AutoMapper.QueryableExtensions;
+
     using Data;
     using Data.Models;
     using Data.Models.Enums;
-    using Infrastructure.Extensions;
     using MediaFiles;
-    using Microsoft.AspNetCore.Identity;
     using Models;
     using Relationships;
     using Shared;
@@ -77,6 +76,7 @@
                 foreach (var tag in tags)
                 {
                     mediaFile.Tags.Add(tag);
+                    tag.MediaFiles.Add(mediaFile);
                 }
             }
 
@@ -85,6 +85,7 @@
                 foreach (var mediaFile in mediaFiles)
                 {
                     tag.MediaFiles.Add(mediaFile);
+                    mediaFile.Tags.Add(tag);
                 }
             }
 
@@ -223,6 +224,8 @@
             }
 
             bool success = post.Tags.Remove(tag);
+            tag.Posts.Remove(post);
+
             this.db.SaveChangesAsync();
 
             return success;
@@ -240,6 +243,8 @@
             Tag tag = this.tagsService.CreateTag(tagName);
 
             post.Tags.Add(tag);
+            tag.Posts.Add(post);
+
             this.db.SaveChangesAsync();
 
             return true;
