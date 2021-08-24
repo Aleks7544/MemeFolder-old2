@@ -16,6 +16,7 @@ namespace MemeFolder
     using Services.MediaFiles;
     using Services.Posts;
     using Services.Relationships;
+    using Services.Tags;
 
     public class Startup
     {
@@ -58,6 +59,7 @@ namespace MemeFolder
             services.AddTransient<IPostsService, PostsService>();
             services.AddTransient<IRelationshipsService, RelationshipsService>();
             services.AddTransient<IMediaFilesService, MediaFilesService>();
+            services.AddTransient<ITagsService, TagsService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

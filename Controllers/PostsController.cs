@@ -1,6 +1,5 @@
 ﻿namespace MemeFolder.Controllers
 {
-    using Data.Models;
     using Infrastructure.Extensions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -33,16 +32,33 @@
         }
 
         [Authorize]
-        public IActionResult EditPost(string id)
+        public IActionResult EditPost(string id, string text)
         {
+            bool success = this.postsService.EditPost(id, text);
 
+            return success ? View($"/Post/{id}") : BadRequest();
         }
 
+        [Authorize]
         public IActionResult DeletePost(string id)
         {
+            this.postsService.DeletePost(id);
 
+            return View("/");
         }
 
-        public IActionResult 
+        public IActionResult RemoveTagFromPost(string id, string tagId)
+        {
+            bool success = this.postsService.RemoveTagFromPost(id, tagId);
+
+            return success ? View($"/Post/{id}") : BadRequest();
+        }
+
+        public IActionResult AddTagToPost(string id, string name)
+        {
+            bool success = this.postsService.AddTagToPost(id, name);
+
+            return success ? View($"/Post/{id}") : BadRequest();
+        }
     }
 }

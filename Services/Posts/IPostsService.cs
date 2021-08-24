@@ -23,6 +23,10 @@
 
         bool IsLiked(string postId, string userId);
 
+        bool RemoveTagFromPost(string postId, string tagId);
+
+        bool AddTagToPost(string postId, string tagName);
+
         T GetPostById<T>(string postId);
 
         IEnumerable<T> GetAllPostFromUser<T>(string userId);

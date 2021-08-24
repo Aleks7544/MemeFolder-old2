@@ -190,6 +190,45 @@
                 .Any(pl => pl.PostId == postId
                            && pl.UserId == userId);
 
+        public bool RemoveTagFromPost(string postId, string tagId)
+        {
+            Post post = GetPostById<Post>(postId);
+
+            if (post == null)
+            {
+                return false;
+            }
+
+            Tag tag = this.tagsService.GetTagById<Tag>(tagId);
+
+            if (tag == null)
+            {
+                return false;
+            }
+
+            bool success = post.Tags.Remove(tag);
+            this.db.SaveChangesAsync();
+
+            return success;
+        }
+
+        public bool AddTagToPost(string postId, string tagName)
+        {
+            Post post = GetPostById<Post>(postId);
+
+            if (post == null)
+            {
+                return false;
+            }
+
+            Tag tag = this.tagsService.CreateTag(tagName);
+
+            post.Tags.Add(tag);
+            this.db.SaveChangesAsync();
+
+            return true;
+        }
+
         public T GetPostById<T>(string postId)
             => this.db.Posts
                 .Where(p => p.Id == postId)
