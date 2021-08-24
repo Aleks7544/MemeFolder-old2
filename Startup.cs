@@ -13,6 +13,7 @@ namespace MemeFolder
     using Data;
     using Data.Models;
     using Infrastructure.Extensions;
+    using Services.Comments;
     using Services.MediaFiles;
     using Services.Posts;
     using Services.Relationships;
@@ -60,6 +61,7 @@ namespace MemeFolder
             services.AddTransient<IRelationshipsService, RelationshipsService>();
             services.AddTransient<IMediaFilesService, MediaFilesService>();
             services.AddTransient<ITagsService, TagsService>();
+            services.AddTransient<ICommentsService, CommentsService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

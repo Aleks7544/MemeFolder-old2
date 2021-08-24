@@ -5,12 +5,12 @@
     using Infrastructure.Extensions;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Microsoft.AspNetCore.Authorization;
-
 
     using Models;
     using Services.Posts;
     using Services.Posts.Models;
+
+    using static Data.DataConstants.HomeController;
 
     public class HomeController : Controller
     {
@@ -23,15 +23,13 @@
             this.postsService = postsService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page)
         {
             IEnumerable<PostViewModel> posts =
-                this.postsService.ConstructPostsFeed(1, 20, this.User.Id(), 5, "hot");
+                this.postsService.ConstructPostsFeed(1, PageSize, this.User.Id(), MaxAgeForHotPostsInDays, PostsFeedSectionName);
 
             return View(posts);
         }
-
-        
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

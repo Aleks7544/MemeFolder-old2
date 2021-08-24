@@ -88,6 +88,9 @@
                 }
             }
 
+            this.db.MediaFiles.AddRange(mediaFiles);
+            this.db.Tags.AddRange(tags);
+
             this.db.Posts.Add(post);
             this.db.SaveChangesAsync();
 
@@ -162,14 +165,27 @@
 
         public bool LikePost(string postId, string userId)
         {
-            Post post = GetPostById<Post>(postId);
+            Post post = this.GetPostById<Post>(postId);
 
             if (post == null)
             {
                 return false;
             }
 
-            PostLike postLike = new PostLike
+            PostLike postLike = 
+                post.PostLikes.FirstOrDefault(pl => pl.PostId == postId && pl.UserId == userId);
+
+            if (postLike != null)
+            {
+                post.PostLikes.Remove(postLike);
+
+                this.db.PostLikes.Remove(postLike);
+                this.db.SaveChangesAsync();
+
+                return true;
+            }
+
+            postLike = new PostLike
             {
                 CreatedOn = DateTime.UtcNow,
                 PostId = postId,
@@ -301,11 +317,10 @@
                 .OrderByDescending(p => p.PostLikes.Count)
                 .ThenByDescending(p => p.Comments.Count)
                 .Skip((page - 1) * pageSize)
-                .Take(pageSize / 4);
-
-            return posts
-                .AsQueryable()
+                .Take(pageSize / 4)
                 .ProjectTo<T>(this.mapper);
+
+            return posts;
         }
 
         public IEnumerable<T> GetNewestPosts<T>(int page, int pageSize, string userId,

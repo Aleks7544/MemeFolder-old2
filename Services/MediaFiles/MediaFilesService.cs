@@ -10,11 +10,11 @@
 
     public class MediaFilesService : IMediaFilesService
     {
-        private IHostingEnvironment environment;
+        private readonly IHostingEnvironment environment;
 
         public MediaFilesService(IHostingEnvironment environment)
         {
-            environment = environment;
+            this.environment = environment;
         }
 
         public MediaFile CreateMediaFile(IFormFile file, string userId)

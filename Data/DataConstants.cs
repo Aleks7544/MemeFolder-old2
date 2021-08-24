@@ -40,6 +40,14 @@
         public class HomeController
         {
             public const int PageSize = 20;
+            public const int MaxAgeForHotPostsInDays = 5;
+
+            public const string PostsFeedSectionName = "hot";
+        }
+
+        public class CommentsController
+        {
+            public const int PageSize = 50;
         }
     }
 }

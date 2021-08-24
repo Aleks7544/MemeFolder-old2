@@ -23,6 +23,13 @@
             return View($"/Post/{postId}");
         }
 
+        public IActionResult ViewPost(string id)
+        {
+            PostViewModel postView = this.postsService.GetPostById<PostViewModel>(id);
+
+            return this.View(postView);
+        }
+
         [Authorize]
         public IActionResult LikePost(string id)
         {
