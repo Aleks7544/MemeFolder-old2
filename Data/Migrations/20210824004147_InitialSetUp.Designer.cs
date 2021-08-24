@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MemeFolder.Data.Migrations
 {
     [DbContext(typeof(MemeFolderDbContext))]
-    [Migration("20210823094229_InitialSetUp")]
+    [Migration("20210824004147_InitialSetUp")]
     partial class InitialSetUp
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -460,6 +460,7 @@ namespace MemeFolder.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 

@@ -15,6 +15,8 @@ using Microsoft.Extensions.Logging;
 
 namespace MemeFolder.Areas.Identity.Pages.Account
 {
+    using System.Text.RegularExpressions;
+
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
@@ -44,7 +46,7 @@ namespace MemeFolder.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [EmailAddress]
+            [Display(Name = "Username or Email")]
             public string Email { get; set; }
 
             [Required]
@@ -77,12 +79,52 @@ namespace MemeFolder.Areas.Identity.Pages.Account
             returnUrl ??= Url.Content("~/");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        
+
+            if (Input.Email.IndexOf('@') > -1)
+            {
+                string emailRegex = @"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}" +
+                                     @"\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\" +
+                                     @".)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$";
+
+                Regex re = new Regex(emailRegex);
+
+                if (!re.IsMatch(Input.Email))
+                {
+                    ModelState.AddModelError("Email", "Email is not valid");
+                }
+            }
+            else
+            {
+                string emailRegex = @"^[a-zA-Z0-9]*$";
+
+                Regex re = new Regex(emailRegex);
+
+                if (!re.IsMatch(Input.Email))
+                {
+                    ModelState.AddModelError("Email", "Username is not valid");
+                }
+            }
+
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var userName = Input.Email;
+
+                if (userName.IndexOf('@') > -1)
+                {
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    if (user == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                        return Page();
+                    }
+                    else
+                    {
+                        userName = user.UserName;
+                    }
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(userName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");

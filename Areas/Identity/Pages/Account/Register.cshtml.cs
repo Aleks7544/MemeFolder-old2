@@ -54,6 +54,11 @@
             public string Email { get; set; }
 
             [Required]
+            [StringLength(MaxUsernameLength, ErrorMessage = "{0} must be between {2} and {1} characters.", MinimumLength = MinUsernameLength)]
+            [Display(Name = "Username")]
+            public string Username { get; set; }
+
+            [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
@@ -65,7 +70,7 @@
             public string ConfirmPassword { get; set; }
 
             [Required]
-            [StringLength(MaxDisplayNameLength, ErrorMessage = "Display name must be between {1} and {0}", MinimumLength = MinDisplayNameLength)]
+            [StringLength(MaxDisplayNameLength, ErrorMessage = "{0} must be between {2} and {1} characters.", MinimumLength = MinDisplayNameLength)]
             [Display(Name = "Display Name")]
             public string DisplayName { get; set; }
         }
@@ -82,7 +87,7 @@
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = Input.Email, Email = Input.Email, DisplayName = Input.DisplayName, CreatedOn = DateTime.UtcNow};
+                var user = new User { UserName = Input.Username, Email = Input.Email, DisplayName = Input.DisplayName, CreatedOn = DateTime.UtcNow};
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

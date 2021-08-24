@@ -1,5 +1,6 @@
 namespace MemeFolder
 {
+    using Areas.Identity;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
@@ -39,6 +40,7 @@ namespace MemeFolder
                     options.Password.RequireNonAlphanumeric = false;
                 })
                 .AddRoles<IdentityRole>()
+                .AddErrorDescriber<AppErrorDescriber>()
                 .AddEntityFrameworkStores<MemeFolderDbContext>();
 
             services.AddAutoMapper(typeof(Startup));

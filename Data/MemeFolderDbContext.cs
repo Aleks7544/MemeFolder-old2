@@ -344,6 +344,11 @@
                 .HasMany(u => u.MediaFiles)
                 .WithOne(m => m.Uploader);
 
+            builder
+                .Entity<User>()
+                .Property(u => u.UserName)
+                .IsRequired();
+
             base.OnModelCreating(builder);
         }
     }

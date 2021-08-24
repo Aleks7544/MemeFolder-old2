@@ -28,8 +28,11 @@
 
         public class User
         {
-            public const int MinDisplayNameLength = 1;
+            public const int MinDisplayNameLength = 3;
             public const int MaxDisplayNameLength = 100;
+
+            public const int MinUsernameLength = 3;
+            public const int MaxUsernameLength = 50;
 
             public const int MaxBioLength = 1000;
         }
