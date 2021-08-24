@@ -1,6 +1,8 @@
 ﻿namespace MemeFolder.Services.Relationships
 {
     using System.Linq;
+    using AutoMapper;
+    using AutoMapper.QueryableExtensions;
     using Data;
     using Data.Models;
     using Data.Models.Enums;
@@ -9,17 +11,19 @@
     public class RelationshipsService : IRelationshipsService
     {
         private readonly MemeFolderDbContext db;
+        private readonly IConfigurationProvider mapper;
 
-        public RelationshipsService(MemeFolderDbContext db)
+        public RelationshipsService(MemeFolderDbContext db, IConfigurationProvider mapper)
         {
             this.db = db;
+            this.mapper = mapper;
         }
 
         public T GetRelationshipByUserIds<T>(string firstUserId, string secondUserId)
             => this.db.Relationships
                 .Where(r => r.FirstUserId == firstUserId && r.SecondUserId == secondUserId 
                             || r.FirstUserId == secondUserId && r.SecondUserId == firstUserId)
-                .To<T>()
+                .ProjectTo<T>(this.mapper)
                 .FirstOrDefault();
 
         public bool IsFollowing(string firstUserId, string secondUserId)

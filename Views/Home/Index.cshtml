@@ -1,8 +1,30 @@
-﻿@{
+﻿@using MemeFolder.Services.Posts
+@using MemeFolder.Infrastructure.Extensions
+
+@model IEnumerable<MemeFolder.Services.Posts.Models.PostViewModel>
+
+@inject IPostsService postsService
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@if (!Model.Any())
+{
+    <h1 class="text-center m-5">No posts found :(</h1>
+}
+else
+{
+    @foreach (var post in Model)
+    {
+        <div class="card col-7 offset-2 my-3">
+            <img class="card-img-top" src="favicon.ico" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">@post.PostedOn</h5>
+                <p class="card-text">@post.Text</p>
+                <a asp-controller="Posts" asp-action="LikePost" asp-route-id="@post.Id" id="LikeButton" class="@(postsService.IsLiked(post.Id, this.User.Id()) ? "btn btn-primary" : "btn btn-secondary")"><i class="fas fa-thumbs-up"></i> Like</a>
+                <a asp-controller="Comments"></a>
+            </div>
+        </div>
+    }
+}

@@ -4,10 +4,13 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-
+    using AutoMapper;
+    using AutoMapper.QueryableExtensions;
     using Data;
     using Data.Models;
+    using Data.Models.Enums;
     using Infrastructure.Extensions;
+    using Microsoft.AspNetCore.Identity;
     using Models;
     using Relationships;
     using Shared;
@@ -16,11 +19,13 @@
     {
         private readonly MemeFolderDbContext db;
         private readonly IRelationshipsService relationshipsService;
+        private readonly IConfigurationProvider mapper;
 
-        public PostsService(MemeFolderDbContext db, IRelationshipsService relationshipsService)
+        public PostsService(MemeFolderDbContext db, IRelationshipsService relationshipsService, IConfigurationProvider mapper)
         {
             this.db = db;
             this.relationshipsService = relationshipsService;
+            this.mapper = mapper;
         }
 
         public Post CreatePost(string text, string userId)
@@ -97,35 +102,65 @@
             return true;
         }
 
+        public bool LikePost(string postId, string userId)
+        {
+            Post post = GetPostById<Post>(postId);
+
+            if (post == null)
+            {
+                return false;
+            }
+
+            PostLike postLike = new PostLike
+            {
+                CreatedOn = DateTime.UtcNow,
+                PostId = postId,
+                Reaction = Reaction.Like,
+                UserId = userId,
+            };
+
+            post.PostLikes.Add(postLike);
+
+            this.db.PostLikes.Add(postLike);
+            this.db.SaveChangesAsync();
+
+            return true;
+        }
+
+        public bool IsLiked(string postId, string userId)
+            => this.db.PostLikes
+                .Any(pl => pl.PostId == postId
+                           && pl.UserId == userId);
+
         public T GetPostById<T>(string postId)
             => this.db.Posts
                 .Where(p => p.Id == postId)
-                .To<T>()
+                .ProjectTo<T>(this.mapper)
                 .FirstOrDefault();
 
         public IEnumerable<T> GetAllPostFromUser<T>(string userId)
             => this.db.Posts
                 .Where(p => p.PosterId == userId)
-                .To<T>();
+                .ProjectTo<T>(this.mapper);
 
         public IEnumerable<PostViewModel> ConstructPostsFeed(int page, int pageSize, string userId, int days, string section)
         {
-            Expression<Func<Post, bool>> bestFriendCondition = p
+            Func<Post, bool> bestFriendCondition = p
                 => p.VisibleToBestFriends
                    && this.relationshipsService
                        .IsBestFriend(userId, p.PosterId);
 
-            Expression<Func<Post, bool>> friendCondition = p
+            Func<Post, bool> friendCondition = p
                 => p.VisibleToFriends
                    && this.relationshipsService
                        .IsFriend(userId, p.PosterId);
 
-            Expression<Func<Post, bool>> followingCondition = p
+            Func<Post, bool> followingCondition = p
                 => p.VisibleToFollowers
                    && this.relationshipsService
                        .IsFollowing(userId, p.PosterId);
 
-            Expression<Func<Post, bool>> publicCondition = p => p.VisibleToThePublic;
+            Func<Post, bool> publicCondition = p => p.VisibleToThePublic;
 
             IEnumerable<PostViewModel> posts = null;
 
@@ -160,35 +195,53 @@
         }
 
         public IEnumerable<T> GetHottestPosts<T>(int page, int pageSize, string userId,
-            Expression<Func<Post, bool>> condition)
-            => this.db.Posts
-                .Where(condition)
-                .Where(p => (DateTime.UtcNow - p.PostedOn).TotalDays <= 3)
+            Func<Post, bool> condition)
+        {
+            DateTime oldestDate = DateTime.UtcNow.AddDays(-5);
+
+            var posts = this.db.Posts
+                .Where(p => p.PostedOn >= oldestDate)
                 .OrderByDescending(p => p.PostLikes.Count)
                 .ThenByDescending(p => p.Comments.Count)
                 .Skip((page - 1) * pageSize)
-                .Take(pageSize / 4)
-                .To<T>();
+                .Take(pageSize / 4);
+
+            return posts
+                .AsQueryable()
+                .ProjectTo<T>(this.mapper);
+        }
 
         public IEnumerable<T> GetNewestPosts<T>(int page, int pageSize, string userId,
-            Expression<Func<Post, bool>> condition)
-            => this.db.Posts
+            Func<Post, bool> condition)
+        {
+            var posts = this.db.Posts
+                .AsEnumerable()
                 .Where(condition)
                 .OrderBy(p => p.PostedOn)
                 .Skip((page - 1) * pageSize)
-                .Take(pageSize / 4)
-                .To<T>();
+                .Take(pageSize / 4);
+
+            return posts
+                .AsQueryable()
+                .ProjectTo<T>(this.mapper);
+        }
 
         public IEnumerable<T> GetTopPosts<T>(int page, int pageSize, string userId, int days,
-            Expression<Func<Post, bool>> condition)
-            => this.db.Posts
+            Func<Post, bool> condition)
+        {
+            var posts = this.db.Posts
+                .AsEnumerable()
                 .Where(condition)
                 .Where(p => (DateTime.UtcNow - p.PostedOn).TotalDays <= days)
                 .OrderByDescending(p => p.PostLikes.Count)
                 .ThenByDescending(p => p.Comments.Count)
                 .Skip((page - 1) * pageSize)
-                .Take(pageSize / 4)
-                .To<T>();
+                .Take(pageSize / 4);
+
+            return posts
+                .AsQueryable()
+                .ProjectTo<T>(this.mapper);
+        }
 
         public IEnumerable<T> Shuffle<T>(IEnumerable<T> list, int size)
         {

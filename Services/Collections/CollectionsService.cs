@@ -2,7 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-
+    using AutoMapper;
+    using AutoMapper.QueryableExtensions;
     using Data;
     using Data.Models;
     using Infrastructure.Extensions;
@@ -10,10 +11,12 @@
     public class CollectionsService : ICollectionsService
     {
         private readonly MemeFolderDbContext db;
+        private readonly IConfigurationProvider mapper;
 
-        public CollectionsService(MemeFolderDbContext db)
+        public CollectionsService(MemeFolderDbContext db, IConfigurationProvider mapper)
         {
             this.db = db;
+            this.mapper = mapper;
         }
 
         public bool RemovePostFromCollection(string postId)
@@ -24,7 +27,7 @@
         public T GetById<T>(string id)
             => this.db.Collections
                 .Where(c => c.Id == id)
-                .To<T>()
+                .ProjectTo<T>(this.mapper)
                 .FirstOrDefault();
     }
 }
